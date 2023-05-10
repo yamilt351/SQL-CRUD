@@ -15,7 +15,6 @@ middlewares.forEach((middleware) => {
 const apiRouthes = [{ route: '/users', controller: router }];
 
 for (const controller of apiRouthes) {
-  console.log(controller.controller);
   app.use(controller.route, controller.controller);
 }
 
@@ -32,6 +31,7 @@ pool.connect().then((client) => {
       console.error(error);
     });
 });
+
 // server
 app.listen(process.env.PORT, () => {
   console.log('listening on port' + process.env.PORT);

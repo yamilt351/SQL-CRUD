@@ -27,7 +27,7 @@ async function findEmail(email, client) {
       email,
     ]);
     if (result.rowCount > 0) {
-      return result;
+      return res.status(400).json({ message: 'bad request' });
     }
   } catch (error) {
     console.log(error);
@@ -36,19 +36,16 @@ async function findEmail(email, client) {
   }
 }
 
-async function signUp({ user }) {
+async function signUp(user) {
+  console.log(user);
   const client = await pool.connect();
   try {
-    const exists = findEmail(user.email, client);
-    if (exists) {
-      throw new Error('already exist');
-    } else {
-      const result = await client.query(
-        'INSERT INTO user (user,email) VALUES ($1,$2) RETURNING *',
-        [user.email, user.password],
-      );
-      return result;
-    }
+    findEmail(user.email, client);
+    const result = await client.query(
+      'INSERT INTO user (user,email) VALUES ($1,$2) RETURNING *',
+      [user.email, user.password],
+    );
+    return result;
   } catch (error) {
     console.log(error);
   } finally {
