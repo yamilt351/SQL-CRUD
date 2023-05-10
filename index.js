@@ -1,26 +1,17 @@
 import express from 'express';
 import importMiddlewares from './midlewareHandler.js';
-import { config } from 'dotenv';
-import pg from 'pg';
 import router from './server/user.controller.js';
+import { pool } from './server.js';
 
-config();
-
-const { Pool } = pg;
 const app = express();
 const middlewares = await importMiddlewares();
-export const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: 'mydb',
-  user: process.env.USERNAME_SQL,
-  password: process.env.PASSWORD,
-});
 
+// middlewares
 middlewares.forEach((middleware) => {
   app.use(middleware);
 });
 
+// routes
 const apiRouthes = [{ route: '/users', controller: router }];
 
 for (const controller of apiRouthes) {
@@ -28,6 +19,7 @@ for (const controller of apiRouthes) {
   app.use(controller.route, controller.controller);
 }
 
+//client
 pool.connect().then((client) => {
   console.log('connect to db');
   client
@@ -40,7 +32,7 @@ pool.connect().then((client) => {
       console.error(error);
     });
 });
-
+// server
 app.listen(process.env.PORT, () => {
   console.log('listening on port' + process.env.PORT);
 });

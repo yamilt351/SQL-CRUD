@@ -10,8 +10,7 @@ router.get('/getUserById', getById);
 
 function signIn(req, res, next) {
   console.log(req + ' req');
-  UserActions
-    .signIn(req.body)
+  UserActions.signIn(req.body)
     .then((user) =>
       user
         ? res.json(user)
@@ -20,25 +19,25 @@ function signIn(req, res, next) {
     .catch((error) => next(error));
 }
 function signUp(req, res, next) {
-  signUp(req.body)
+  UserActions.signUp(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function editUser(req, res, next) {
-  editUser(req.body)
+  UserActions.editUser(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function deleteUser(req, res, next) {
-  deleteUser(req.body)
+  UserActions.deleteUser(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function getById(req, res, next) {
-  getById(req.body)
+  UserActions.getById(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
