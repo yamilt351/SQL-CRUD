@@ -11,7 +11,6 @@ const importMiddlewares = async () => {
   for (const file of middlewareFiles) {
     const middleware = await import(`./midlewares/${file}`);
     middlewareArray.push(middleware.default);
-    console.log(middlewareArray);
   }
 
   return middlewareArray;
