@@ -1,22 +1,17 @@
 import { pool } from '../server.js';
 import bcrypt from 'bcryptjs';
+const client = await pool.connect();
 
 async function signIn(user) {
-  const client = await pool.connect();
-
-  const result = await client.query(
-    'SELECT * FROM users WHERE email = $1',
-    [user.email],
-  );
-
-  if (result.rowCount === 0) {
+  const email = user.email;
+  const password = user.password;
+  const alreadyExists = await findEmail(email);
+  if (!alreadyExists) {
     return null;
   } else {
-    const dbUser = result.rows[0];
-    const passwordMatch = await bcrypt.compare(user.password, dbUser.password);
-    console.log(passwordMatch);
+    const dbUser = alreadyExists;
+    const passwordMatch = await bcrypt.compare(password, dbUser.password);
     if (passwordMatch) {
-      client.release();
       return dbUser;
     } else {
       return null;
@@ -24,17 +19,14 @@ async function signIn(user) {
   }
 }
 
-async function findEmail(email, client) {
+async function findEmail(email) {
   const result = await client.query('SELECT * FROM users WHERE email =$1', [
     email,
   ]);
-
   if (result.rowCount > 0) {
     const user = result.rows[0];
-    await client.release();
     return user;
   } else {
-    await client.release();
     return null;
   }
 }
@@ -46,20 +38,16 @@ async function encrypt(user) {
 }
 
 async function signUp(user) {
-  const client = await pool.connect();
-
   const alreadyExists = await findEmail(user.email, client);
   if (!alreadyExists) {
     const encryptedPass = await encrypt(user);
-
     const result = await client.query(
       'INSERT INTO users (email,password) VALUES ($1,$2) RETURNING *',
       [user.email, encryptedPass],
     );
-    // client.release();
     return result.rows[0];
   } else {
-    throw new Error('bad request');
+    return alreadyExists;
   }
 }
 

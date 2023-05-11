@@ -9,11 +9,16 @@ router.delete('/deleteUser', deleteUser);
 router.get('/getUserById', getById);
 
 function signIn(req, res, next) {
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({ message: 'bad request' });
+  }
   UserActions.signIn(req.body)
     .then((user) =>
       user
         ? res.json(user)
-        : res.status(404).json({ message: 'user not found' }),
+        : res
+            .status(404)
+            .json({ message: 'user with those credentials not found' }),
     )
     .catch((error) => next(error));
 }
