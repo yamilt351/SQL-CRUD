@@ -1,6 +1,7 @@
 import { pool } from '../server.js';
+import bcrypt from 'bcryptjs';
 
-async function signIn( user ) {
+async function signIn(user) {
   const client = await pool.connect();
 
   const result = await client.query(
@@ -32,15 +33,25 @@ async function findEmail(email, client) {
   }
 }
 
+async function encrypt(user) {
+  const bcryptSalt = bcrypt.genSaltSync(12);
+  const salt = bcryptSalt;
+  const hash = await bcrypt.hash(user.password, salt);
+  return hash;
+}
+
 async function signUp(user) {
   const client = await pool.connect();
 
   const alreadyExists = await findEmail(user.email, client);
   if (!alreadyExists) {
+    const encryptedPass = await encrypt(user);
+    console.log(encryptedPass);
     const result = await client.query(
       'INSERT INTO users (email,password) VALUES ($1,$2) RETURNING *',
-      [user.email, user.password],
+      [user.email, encryptedPass],
     );
+    console.log(result);
     client.release();
     return result;
   } else {

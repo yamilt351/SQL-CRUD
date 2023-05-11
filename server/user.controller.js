@@ -17,6 +17,7 @@ function signIn(req, res, next) {
     )
     .catch((error) => next(error));
 }
+
 function signUp(req, res, next) {
   UserActions.signUp(req.body)
     .then((user) => res.json(user))
