@@ -1,12 +1,14 @@
 import { pool } from '../server.js';
 
-async function signIn({ user }) {
+async function signIn( user ) {
+  console.log(user);
   const client = await pool.connect();
 
   const result = await client.query(
     'SELECT * FROM users WHERE email = $1 AND password = $2',
     [user.email, user.password],
   );
+
   if (result.rowCount === 0) {
     return null;
   } else {
@@ -20,6 +22,7 @@ async function findEmail(email, client) {
   const result = await client.query('SELECT * FROM users WHERE email =$1', [
     email,
   ]);
+
   if (result.rowCount > 0) {
     const user = result.rows[0];
     await client.release();
