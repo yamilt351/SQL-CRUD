@@ -9,7 +9,6 @@ router.delete('/deleteUser', deleteUser);
 router.get('/getUserById', getById);
 
 function signIn(req, res, next) {
-  console.log(req + ' req');
   UserActions.signIn(req.body)
     .then((user) =>
       user

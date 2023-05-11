@@ -1,7 +1,6 @@
 import { pool } from '../server.js';
 
 async function signIn( user ) {
-  console.log(user);
   const client = await pool.connect();
 
   const result = await client.query(

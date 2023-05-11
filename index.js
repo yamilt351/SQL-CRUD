@@ -33,6 +33,4 @@ pool.connect().then((client) => {
 });
 
 // server
-app.listen(process.env.PORT, () => {
-  console.log('listening on port' + process.env.PORT);
-});
+app.listen(process.env.PORT, () => {});
