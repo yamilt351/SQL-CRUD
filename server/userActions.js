@@ -5,16 +5,22 @@ async function signIn(user) {
   const client = await pool.connect();
 
   const result = await client.query(
-    'SELECT * FROM users WHERE email = $1 AND password = $2',
-    [user.email, user.password],
+    'SELECT * FROM users WHERE email = $1',
+    [user.email],
   );
 
   if (result.rowCount === 0) {
     return null;
   } else {
-    const user = result.rows[0];
-    client.release();
-    return user;
+    const dbUser = result.rows[0];
+    const passwordMatch = await bcrypt.compare(user.password, dbUser.password);
+    console.log(passwordMatch);
+    if (passwordMatch) {
+      client.release();
+      return dbUser;
+    } else {
+      return null;
+    }
   }
 }
 
@@ -34,9 +40,8 @@ async function findEmail(email, client) {
 }
 
 async function encrypt(user) {
-  const bcryptSalt = bcrypt.genSaltSync(12);
-  const salt = bcryptSalt;
-  const hash = await bcrypt.hash(user.password, salt);
+  const bcryptSalt = await bcrypt.genSalt(12);
+  const hash = await bcrypt.hash(user.password, bcryptSalt);
   return hash;
 }
 
@@ -46,14 +51,13 @@ async function signUp(user) {
   const alreadyExists = await findEmail(user.email, client);
   if (!alreadyExists) {
     const encryptedPass = await encrypt(user);
-    console.log(encryptedPass);
+
     const result = await client.query(
       'INSERT INTO users (email,password) VALUES ($1,$2) RETURNING *',
       [user.email, encryptedPass],
     );
-    console.log(result);
-    client.release();
-    return result;
+    // client.release();
+    return result.rows[0];
   } else {
     throw new Error('bad request');
   }
