@@ -1,6 +1,18 @@
 import { pool } from '../server.js';
 import bcrypt from 'bcryptjs';
 const client = await pool.connect();
+import { JWT_TOKEN } from '../index.js';
+import jwt from 'jsonwebtoken';
+
+export async function token(userId, cookie) {
+  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN);
+  console.log(sendToken);
+  cookie.set('token', sendToken, {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: true,
+  });
+}
 
 async function signIn(user) {
   const email = user.email;
@@ -27,14 +39,14 @@ async function findEmail(email) {
     const user = result.rows[0];
     return user;
   } else {
-    return null;
+    return false;
   }
 }
 
 async function encrypt(user) {
   const bcryptSalt = await bcrypt.genSalt(12);
-  const hash = await bcrypt.hash(user.password, bcryptSalt);
-  return hash;
+  const hashed = await bcrypt.hash(user.password, bcryptSalt);
+  return hashed;
 }
 
 async function signUp(user) {
@@ -47,7 +59,7 @@ async function signUp(user) {
     );
     return result.rows[0];
   } else {
-    return alreadyExists;
+    throw new Error('bad request');
   }
 }
 
