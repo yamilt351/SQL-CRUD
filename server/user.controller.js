@@ -11,16 +11,23 @@ router.get('/getUserById', getById);
 function signIn(req, res, next) {
   if (!req.body.email || !req.body.password) {
     return res.status(400).json({ message: 'bad request' });
-  }
-  UserActions.signIn(req.body)
-    .then((user) =>
-      user
-        ? res.json(user)
-        : res
+  } else {
+    UserActions.signIn(req.body)
+      .then(({ dbUser, sendToken }) => {
+        if (dbUser) {
+          res.cookie('token', sendToken, {
+            httpOnly: true,
+            secure: true,
+          });
+          res.json(dbUser);
+        } else {
+          res
             .status(404)
-            .json({ message: 'user with those credentials not found' }),
-    )
-    .catch((error) => next(error));
+            .json({ message: 'user with those credentials not found' });
+        }
+      })
+      .catch((error) => next(error));
+  }
 }
 
 function signUp(req, res, next) {

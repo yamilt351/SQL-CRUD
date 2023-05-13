@@ -2,8 +2,14 @@ const Request = require('supertest');
 const { expect } = require('chai');
 const myReq = Request('http://localhost:4000');
 const dotenv = require('dotenv');
+const bcrypt = require('bcryptjs');
+
+
 dotenv.config();
+
 const randomNumber = Math.floor(Math.random() * 1000);
+
+// tests cases
 const test = {
   email: '12234l@hotmail',
   password: '134',
@@ -28,9 +34,13 @@ const randomEmail = {
 describe('Auth function', () => {
   it('should return status code 200 when valid credentials are provided POST (/users/signin)', async () => {
     const response = await myReq.post('/users/signin').send(test);
+    console.log(response.headers);
     expect(response.statusCode).to.be.equal(200);
     expect(response.body.email).to.be.equal(test.email);
     expect(response.headers['content-type']).to.include('application/json');
+    const cookies = response.headers['set-cookie'];
+    const tokenCookie = cookies.find((cookie) => cookie.includes('token'));
+    expect(tokenCookie).to.exist;
   });
   it('should return status code 400 and a descriptive error message when empty credentials are provided POST (/users/signin)', async () => {
     const response = await myReq.post('/users/signin').send(emptyTest);
@@ -70,5 +80,14 @@ describe('Sign Up function', () => {
     const response = await myReq.post('/users/signup').send(test);
     expect(response.statusCode).to.be.equal(400);
     expect(response.body.error).to.be.equal('bad request');
+  });
+});
+
+describe('bcrypt', () => {
+  it('should hash a password correctly', async () => {
+    const password = randomEmail.password;
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const result = await bcrypt.compare(password, hashedPassword);
+    expect(result).to.be.true;
   });
 });

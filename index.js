@@ -4,13 +4,13 @@ import router from './server/user.controller.js';
 import { pool } from './server.js';
 import errorHandler from './helpers/errorHandler.js';
 
-
 const app = express();
 const middlewares = await importMiddlewares();
-export const JWT_TOKEN= process.env.TOKEN
+export const JWT_TOKEN = process.env.TOKEN;
 
 // middlewares
 middlewares.forEach((middleware) => {
+  console.log(middleware);
   app.use(middleware);
 });
 

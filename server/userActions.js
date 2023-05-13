@@ -4,14 +4,9 @@ const client = await pool.connect();
 import { JWT_TOKEN } from '../index.js';
 import jwt from 'jsonwebtoken';
 
-export async function token(userId, cookie) {
-  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN);
-  console.log(sendToken);
-  cookie.set('token', sendToken, {
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: true,
-  });
+export async function token(userId) {
+  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN, { expiresIn: '1h' });
+  return sendToken;
 }
 
 async function signIn(user) {
@@ -19,19 +14,20 @@ async function signIn(user) {
   const password = user.password;
   const alreadyExists = await findEmail(email);
   if (!alreadyExists) {
-    return null;
+    return false;
   } else {
     const dbUser = alreadyExists;
     const passwordMatch = await bcrypt.compare(password, dbUser.password);
     if (passwordMatch) {
-      return dbUser;
+      const sendToken = await token(user.id);
+      return { dbUser, sendToken };
     } else {
-      return null;
+      return false;
     }
   }
 }
 
-async function findEmail(email) {
+export async function findEmail(email) {
   const result = await client.query('SELECT * FROM users WHERE email =$1', [
     email,
   ]);
