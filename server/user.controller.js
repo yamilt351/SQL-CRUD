@@ -1,18 +1,18 @@
 import { Router } from 'express';
-import UserActions from './userActions.js';
+import userActions from './userActions.js';
 const router = Router();
 
 router.post('/signIn', signIn);
 router.put('/editUser', editUser);
 router.post('/signUp', signUp);
 router.delete('/deleteUser', deleteUser);
-router.get('/getUserById', getById);
 
 function signIn(req, res, next) {
   if (!req.body.email || !req.body.password) {
     return res.status(400).json({ message: 'bad request' });
   } else {
-    UserActions.signIn(req.body)
+    userActions
+      .signIn(req.body)
       .then(({ dbUser, sendToken }) => {
         if (dbUser) {
           res.cookie('token', sendToken, {
@@ -31,25 +31,22 @@ function signIn(req, res, next) {
 }
 
 function signUp(req, res, next) {
-  UserActions.signUp(req.body)
+  userActions
+    .signUp(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function editUser(req, res, next) {
-  UserActions.editUser(req.body)
+  userActions
+    .editUser(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function deleteUser(req, res, next) {
-  UserActions.deleteUser(req.body)
-    .then((user) => res.json(user))
-    .catch((error) => next(error));
-}
-
-function getById(req, res, next) {
-  UserActions.getById(req.body)
+  userActions
+    .deleteUser(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }

@@ -1,33 +1,15 @@
 import { pool } from '../server.js';
 import bcrypt from 'bcryptjs';
-const client = await pool.connect();
 import { JWT_TOKEN } from '../index.js';
 import jwt from 'jsonwebtoken';
 
-export async function token(userId) {
-  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN, { expiresIn: '1h' });
-  return sendToken;
-}
+const client = await pool.connect();
+const userActions = {
+  signIn,
+  signUp,
+};
 
-async function signIn(user) {
-  const email = user.email;
-  const password = user.password;
-  const alreadyExists = await findEmail(email);
-  if (!alreadyExists) {
-    return false;
-  } else {
-    const dbUser = alreadyExists;
-    const passwordMatch = await bcrypt.compare(password, dbUser.password);
-    if (passwordMatch) {
-      const sendToken = await token(user.id);
-      return { dbUser, sendToken };
-    } else {
-      return false;
-    }
-  }
-}
-
-export async function findEmail(email) {
+async function findUserByEmail(email) {
   const result = await client.query('SELECT * FROM users WHERE email =$1', [
     email,
   ]);
@@ -39,16 +21,39 @@ export async function findEmail(email) {
   }
 }
 
-async function encrypt(user) {
+async function hasPassword(user) {
   const bcryptSalt = await bcrypt.genSalt(12);
   const hashed = await bcrypt.hash(user.password, bcryptSalt);
   return hashed;
 }
 
-async function signUp(user) {
-  const alreadyExists = await findEmail(user.email, client);
+export async function generateToken(userId) {
+  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN, { expiresIn: '1h' });
+  return sendToken;
+}
+
+async function signIn(user) {
+  const email = user.email;
+  const password = user.password;
+  const alreadyExists = await findUserByEmail(email);
   if (!alreadyExists) {
-    const encryptedPass = await encrypt(user);
+    return false;
+  } else {
+    const dbUser = alreadyExists;
+    const passwordMatch = await bcrypt.compare(password, dbUser.password);
+    if (passwordMatch) {
+      const sendToken = await generateToken(user.id);
+      return { dbUser, sendToken };
+    } else {
+      return false;
+    }
+  }
+}
+
+async function signUp(user) {
+  const alreadyExists = await findUserByEmail(user.email, client);
+  if (!alreadyExists) {
+    const encryptedPass = await hasPassword(user);
     const result = await client.query(
       'INSERT INTO users (email,password) VALUES ($1,$2) RETURNING *',
       [user.email, encryptedPass],
@@ -59,8 +64,4 @@ async function signUp(user) {
   }
 }
 
-const UserActions = {
-  signIn,
-  signUp,
-};
-export default UserActions;
+export default userActions;

@@ -34,7 +34,6 @@ const randomEmail = {
 describe('Auth function', () => {
   it('should return status code 200 when valid credentials are provided POST (/users/signin)', async () => {
     const response = await myReq.post('/users/signin').send(test);
-    console.log(response.headers);
     expect(response.statusCode).to.be.equal(200);
     expect(response.body.email).to.be.equal(test.email);
     expect(response.headers['content-type']).to.include('application/json');
