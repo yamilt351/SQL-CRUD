@@ -1,6 +1,6 @@
 import express from 'express';
 import importMiddlewares from './midlewareHandler.js';
-import router from './server/user.controller.js';
+import router from './server/users/user.controller.js'
 import { pool } from './server.js';
 import errorHandler from './helpers/errorHandler.js';
 

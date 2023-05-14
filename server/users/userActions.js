@@ -1,6 +1,6 @@
-import { pool } from '../server.js';
+import { pool } from '../../server.js';
 import bcrypt from 'bcryptjs';
-import { JWT_TOKEN } from '../index.js';
+import { JWT_TOKEN } from '../../index.js'; 
 import jwt from 'jsonwebtoken';
 
 const client = await pool.connect();
