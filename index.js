@@ -1,6 +1,7 @@
 import express from 'express';
 import importMiddlewares from './midlewareHandler.js';
-import router from './server/users/user.controller.js'
+import userRouter from './server/users/user.controller.js';
+import taskRouter from './server/tasks/tasks.controller.js';
 import { pool } from './server.js';
 import errorHandler from './helpers/errorHandler.js';
 
@@ -15,7 +16,10 @@ middlewares.forEach((middleware) => {
 });
 
 // routes
-const apiRouthes = [{ route: '/users', controller: router }];
+const apiRouthes = [
+  { route: '/users', controller: userRouter },
+  { route: '/tasks', controller: taskRouter },
+];
 
 for (const controller of apiRouthes) {
   app.use(controller.route, controller.controller);

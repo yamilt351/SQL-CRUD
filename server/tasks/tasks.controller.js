@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import taskActions from './tasksActions.js';
 const router = Router();
 
 router.post('/tasks', createTasks);
@@ -8,33 +9,33 @@ router.get('/search/tasks', searchTasks);
 router.delete('/tasks', deleteTasks);
 
 function createTasks(req, res, next) {
-asdas
-    .signUp(req.body)
+  taskActions
+    .createTasks(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function getTasks(req, res, next) {
-ads
+  taskActions
     .signUp(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 function editTasks(req, res, next) {
-asdas
+  taskActions
     .signUp(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function deleteTasks(req, res, next) {
-ads
+  taskActions
     .signUp(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 function searchTasks(req, res, next) {
-ads
+  taskActions
     .signUp(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
