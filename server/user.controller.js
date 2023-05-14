@@ -3,9 +3,7 @@ import userActions from './userActions.js';
 const router = Router();
 
 router.post('/signIn', signIn);
-router.put('/editUser', editUser);
 router.post('/signUp', signUp);
-router.delete('/deleteUser', deleteUser);
 
 function signIn(req, res, next) {
   if (!req.body.email || !req.body.password) {
@@ -33,20 +31,6 @@ function signIn(req, res, next) {
 function signUp(req, res, next) {
   userActions
     .signUp(req.body)
-    .then((user) => res.json(user))
-    .catch((error) => next(error));
-}
-
-function editUser(req, res, next) {
-  userActions
-    .editUser(req.body)
-    .then((user) => res.json(user))
-    .catch((error) => next(error));
-}
-
-function deleteUser(req, res, next) {
-  userActions
-    .deleteUser(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
