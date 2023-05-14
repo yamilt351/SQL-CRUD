@@ -17,26 +17,26 @@ function createTasks(req, res, next) {
 
 function getTasks(req, res, next) {
   taskActions
-    .signUp(req.body)
+    .signUp()
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 function editTasks(req, res, next) {
   taskActions
-    .signUp(req.body)
+    .editTasks(req.body)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 
 function deleteTasks(req, res, next) {
   taskActions
-    .signUp(req.body)
+    .deleteTasks(req.params)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
 function searchTasks(req, res, next) {
   taskActions
-    .signUp(req.body)
+    .searchTasks(req.query)
     .then((user) => res.json(user))
     .catch((error) => next(error));
 }
