@@ -24,12 +24,12 @@ async function getTasks(userId) {
     'SELECT * FROM task WHERE user_id=$1',
     [userId],
   );
-  return getTasksByUserId;
+  return getTasksByUserId.rows;
 }
 
 async function getByDate(date) {
   const getTaskByDate = await client.query(
-    'SELECT * FROM task WHERE updatet_ad=$1',
+    'SELECT * FROM task WHERE updatet_at=$1',
     [date],
   );
   return getTaskByDate.rows[0];
@@ -47,12 +47,12 @@ async function searchTask(query) {
     'SELECT * FROM task WHERE name LIKE $1 OR description LIKE $1',
     [`%${query}%`],
   );
-  return getByQuery.rows[0];
+  return getByQuery.rows;
 }
 
 async function editTasks(body) {
   const getTasks = await client.query(
-    `UPDATE TABLE SET name=$1, description=$2 WHERE id=$3`,
+    `UPDATE task SET name=$1, description=$2 WHERE id=$3`,
     [body.name, body.description, body.id],
   );
   return getTasks.rows[0];
