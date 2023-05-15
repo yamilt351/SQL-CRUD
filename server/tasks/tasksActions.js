@@ -3,17 +3,17 @@ const taskActions = {
   getTasks,
   editTasks,
   deleteTasks,
-  searchTasks,
+  getByDate,
+  searchTask,
+  getTasksById,
 };
 
 async function createTasks(body) {}
-
 async function getTasks() {}
-
+async function getByDate(date) {}
+async function getTasksById(taskId) {}
+async function searchTask(query) {}
 async function editTasks(body) {}
+async function deleteTasks(taskId) {}
 
-async function deleteTasks(id) {}
-
-async function searchTasks() {}
-
-export default taskActions
+export default taskActions;
