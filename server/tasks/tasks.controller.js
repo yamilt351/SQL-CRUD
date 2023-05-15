@@ -11,10 +11,14 @@ router.put('/editTask/:id', editTasks);
 router.delete('/delete/:id', deleteTasks);
 
 function createTasks(req, res, next) {
-  taskActions
-    .createTasks(req.body)
-    .then((task) => res.json(task))
-    .catch((error) => next(error));
+  if (!req.body.name || !req.body.description) {
+    res.status(400).json({ message: 'Name or Description cannot be empty' });
+  } else {
+    taskActions
+      .createTasks(req.body)
+      .then((task) => res.json(task))
+      .catch((error) => next(error));
+  }
 }
 
 function getTasks(req, res, next) {

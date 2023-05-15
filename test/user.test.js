@@ -13,7 +13,7 @@ const randomNumber = Math.floor(Math.random() * 1000);
 const test = {
   email: '12234l@hotmail',
   password: '134',
-};
+ };
 const emptyTest = {
   email: '',
   password: '',
@@ -90,3 +90,5 @@ describe('bcrypt', () => {
     expect(result).to.be.true;
   });
 });
+
+

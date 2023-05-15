@@ -3,7 +3,7 @@ import importMiddlewares from './midlewareHandler.js';
 import userRouter from './server/users/user.controller.js';
 import taskRouter from './server/tasks/tasks.controller.js';
 import { pool } from './server.js';
-import errorHandler from './helpers/errorHandler.js';
+import errorHandler from './server/helpers/errorHandler.js'
 
 const app = express();
 const middlewares = await importMiddlewares();
@@ -16,6 +16,8 @@ middlewares.forEach((middleware) => {
 });
 
 // routes
+app.use(errorHandler);
+
 const apiRouthes = [
   { route: '/users', controller: userRouter },
   { route: '/tasks', controller: taskRouter },
@@ -24,7 +26,6 @@ const apiRouthes = [
 for (const controller of apiRouthes) {
   app.use(controller.route, controller.controller);
 }
-app.use(errorHandler);
 //client
 pool.connect().then((client) => {
   client
