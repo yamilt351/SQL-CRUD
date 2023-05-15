@@ -16,7 +16,7 @@ middlewares.forEach((middleware) => {
 });
 
 // routes
-app.use(errorHandler);
+
 
 const apiRouthes = [
   { route: '/users', controller: userRouter },
@@ -26,6 +26,7 @@ const apiRouthes = [
 for (const controller of apiRouthes) {
   app.use(controller.route, controller.controller);
 }
+app.use(errorHandler);
 //client
 pool.connect().then((client) => {
   client
