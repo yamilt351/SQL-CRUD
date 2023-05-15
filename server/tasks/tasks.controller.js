@@ -6,9 +6,9 @@ router.post('/create', createTasks);
 router.get('/getAll', getTasks);
 router.get('/getBy?date=:date', getByDate);
 router.get('/getBy?query=:query', searchTask);
-router.get('/getBy/:id', getTasksById);
-router.put('/editTask/:id', editTasks);
-router.delete('/delete/:id', deleteTasks);
+router.get('/:id', getTasksById);
+router.put('/:id', editTasks);
+router.delete('/:id', deleteTasks);
 
 function createTasks(req, res, next) {
   if (!req.body.name || !req.body.description) {

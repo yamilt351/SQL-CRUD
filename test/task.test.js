@@ -76,3 +76,10 @@ describe('Edit Task', () => {
     expect(response.statusCode).to.be.equal(400);
   });
 });
+
+describe('Delete task', () => {
+  it(' should return status code 401 if the task is deleted succesfully DELETE (/:id)', async () => {
+    const response = await myReq.delete(`/${id}`);
+    expect(response.statusCode).to.be.equal(401);
+  });
+});
