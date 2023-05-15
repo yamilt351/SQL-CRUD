@@ -29,7 +29,7 @@ async function getTasks(userId) {
 
 async function getByDate(date) {
   const getTaskByDate = await client.query(
-    'SELECT * FROM task WHERE updated_ad=$1',
+    'SELECT * FROM task WHERE updatet_ad=$1',
     [date],
   );
   return getTaskByDate.rows[0];
