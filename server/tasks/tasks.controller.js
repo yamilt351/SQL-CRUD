@@ -1,14 +1,16 @@
 import { Router } from 'express';
 import taskActions from './tasksActions.js';
+import authMiddleware from '../helpers/jwt.js';
+
 const router = Router();
 
-router.post('/create', createTasks);
-router.get('/getAll', getTasks);
-router.get('/getBy?date=:date', getByDate);
-router.get('/getBy?query=:query', searchTask);
-router.get('/:id', getTasksById);
-router.put('/:id', editTasks);
-router.delete('/:id', deleteTasks);
+router.post('/create', authMiddleware, createTasks);
+router.get('/getAll', authMiddleware, getTasks);
+router.get('/getBy?date=:date', authMiddleware, getByDate);
+router.get('/getBy?query=:query', authMiddleware, searchTask);
+router.get('/:id', authMiddleware, getTasksById);
+router.put('/:id', authMiddleware, editTasks);
+router.delete('/:id', authMiddleware, deleteTasks);
 
 function createTasks(req, res, next) {
   if (!req.body.name || !req.body.description) {
