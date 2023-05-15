@@ -2,13 +2,13 @@ import { Router } from 'express';
 import taskActions from './tasksActions.js';
 const router = Router();
 
-router.post('/tasks', createTasks);
-router.get('/tasks', getTasks);
-router.get('/tasks?date=:date', getByDate);
-router.get('/task?query=:query', searchTask);
-router.get('/tasks/:id', getTasksById);
-router.put('/tasks/:id', editTasks);
-router.delete('/tasks/:id', deleteTasks);
+router.post('/create', createTasks);
+router.get('/getAll', getTasks);
+router.get('/getBy?date=:date', getByDate);
+router.get('/getBy?query=:query', searchTask);
+router.get('/getBy/:id', getTasksById);
+router.put('/editTask/:id', editTasks);
+router.delete('/delete/:id', deleteTasks);
 
 function createTasks(req, res, next) {
   taskActions
