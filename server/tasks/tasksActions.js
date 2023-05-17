@@ -6,9 +6,7 @@ const taskActions = {
   getTasks,
   editTasks,
   deleteTasks,
-  getByDate,
-  searchTask,
-  getTasksById,
+  compareId,
 };
 
 async function createTasks(body, userId) {
@@ -28,42 +26,31 @@ async function getTasks(userId) {
   return getTasksByUserId.rows;
 }
 
-async function getByDate(date) {
-  const getTaskByDate = await client.query(
-    'SELECT * FROM task WHERE updatet_at=$1',
-    [date],
-  );
-  return getTaskByDate.rows[0];
-}
-
-async function getTasksById(taskId) {
-  const getById = await client.query('SELECT * FROM task WHERE id=$1', [
-    taskId,
-  ]);
-  return getById.rows[0];
-}
-
-async function searchTask(query) {
-  const getByQuery = await client.query(
-    'SELECT * FROM task WHERE name LIKE $1 OR description LIKE $1',
-    [`%${query}%`],
-  );
-  return getByQuery.rows;
-}
-
-async function editTasks(body) {
-  const getTasks = await client.query(
+async function editTasks(body, id) {
+  const editedTasks = await client.query(
     `UPDATE task SET name=$1, description=$2 WHERE id=$3`,
-    [body.name, body.description, body.id],
+    [body.name, body.description, id],
   );
-  return getTasks.rows[0];
+  return editedTasks.rows[0];
 }
 
-async function deleteTasks(taskId) {
+async function deleteTasks(task) {
   const deleteTasksById = await client.query('DELETE FROM task WHERE id=$1', [
-    taskId,
+    task.id,
   ]);
-  return deleteTasksById;
+  console.log(deleteTasksById);
+  return deleteTasksById.rowCount;
 }
 
+async function compareId(postid, userid) {
+  const findPost = await client.query('SELECT * FROM task WHERE id=$1', [
+    postid,
+  ]);
+  console.log(findPost);
+  if (findPost.rows[0].user_id === userid) {
+    return findPost.rows[0];
+  } else {
+    return null;
+  }
+}
 export default taskActions;

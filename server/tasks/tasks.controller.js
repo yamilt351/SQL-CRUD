@@ -6,9 +6,6 @@ const router = Router();
 
 router.post('/', authMiddleware, createTasks);
 router.get('/getAll', authMiddleware, getTasks);
-router.get('/getBy?date=:date', authMiddleware, getByDate);
-router.get('/getBy?query=:query', authMiddleware, searchTask);
-router.get('/:id', authMiddleware, getTasksById);
 router.put('/:id', authMiddleware, editTasks);
 router.delete('/:id', authMiddleware, deleteTasks);
 
@@ -31,55 +28,38 @@ function getTasks(req, res, next) {
     .then((task) => res.json(task))
     .catch((error) => next(error));
 }
-function getTasksById(req, res, next) {
-  taskActions
-    .getTasksById(req.params.id)
-    .then((task) => res.json(task))
-    .catch((error) => next(error));
-}
 
-function getByDate(req, res, next) {
-  taskActions
-    .getByDate(req.query.date)
-    .then((task) => res.json(task))
-    .catch((error) => next(error));
-}
 function editTasks(req, res, next) {
+  const id = req.params.id;
+  const checkProperty = taskActions.compareId(id, req.user.id);
   if (!req.body.name || !req.body.description) {
-    res.status(400);
-  } else if (req.params.id !== req.body.id) {
-    res.status(401);
+    res.status(400).send();
+  } else if (!checkProperty) {
+    res.status(401).send();
   } else {
     taskActions
-      .editTasks(req.body)
+      .editTasks(req.body, id)
       .then((task) => res.json(task))
       .catch((error) => next(error));
   }
 }
 
-function deleteTasks(req, res, next) {
-  if (req.params.id !== req.body.id) {
-    res.status(401);
+async function deleteTasks(req, res, next) {
+  const task = await taskActions.compareId(req.params.id, req.user.id);
+  if (!task) {
+    res.status(401).send();
   } else {
     taskActions
-      .deleteTasks(req.params.id)
-      .then((task) =>
-        task
-          ? res.status(200).json(task)
+      .deleteTasks(task)
+      .then((rowCount) =>
+        rowCount > 0
+          ? res
+              .status(200)
+              .json({ message: `Task with id ${req.params.id} deleted` })
           : res.status(400).json({
               message: `Could not delete the task with id ${req.params.id}`,
             }),
       )
-      .catch((error) => next(error));
-  }
-}
-function searchTask(req, res, next) {
-  if (!req.query.query) {
-    res.status(400).json({ message: 'query cannot be empty' });
-  } else {
-    taskActions
-      .searchTask(req.query.query)
-      .then((task) => res.json(task))
       .catch((error) => next(error));
   }
 }
