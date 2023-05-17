@@ -5,7 +5,7 @@ import authMiddleware from '../helpers/jwt.js';
 const router = Router();
 
 router.post('/', authMiddleware, createTasks);
-router.get('/getAll', authMiddleware, getTasks);
+router.get('/', authMiddleware, getTasks);
 router.put('/:id', authMiddleware, editTasks);
 router.delete('/:id', authMiddleware, deleteTasks);
 
