@@ -16,7 +16,7 @@ async function createTasks(body, userId) {
   );
   return addTask.rows[0];
 }
-
+// get only user tasks
 async function getTasks(userId) {
   const getTasksByUserId = await client.query(
     'SELECT * FROM task WHERE user_id=$1',

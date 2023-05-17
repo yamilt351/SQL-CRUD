@@ -21,7 +21,7 @@ async function findUserByEmail(email) {
   }
 }
 
-async function hasPassword(user) {
+async function hashPassword(user) {
   const validPassword = validatePassword(user.password);
   if (validPassword) {
     const bcryptSalt = await bcrypt.genSalt(12);
@@ -62,7 +62,7 @@ async function signUp(user) {
   if (validEmail) {
     const alreadyExists = await findUserByEmail(user.email, client);
     if (!alreadyExists) {
-      const encryptedPass = await hasPassword(user);
+      const encryptedPass = await hashPassword(user);
       const result = await client.query(
         'INSERT INTO users (email,password) VALUES ($1,$2) RETURNING *',
         [user.email, encryptedPass],
