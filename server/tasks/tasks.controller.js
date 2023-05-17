@@ -4,7 +4,7 @@ import authMiddleware from '../helpers/jwt.js';
 
 const router = Router();
 
-router.post('/create', authMiddleware, createTasks);
+router.post('/', authMiddleware, createTasks);
 router.get('/getAll', authMiddleware, getTasks);
 router.get('/getBy?date=:date', authMiddleware, getByDate);
 router.get('/getBy?query=:query', authMiddleware, searchTask);

@@ -28,7 +28,7 @@ async function hasPassword(user) {
 }
 
 export async function generateToken(userId) {
-  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN, { expiresIn: '1h' });
+  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN, { expiresIn: '48h' });
   return sendToken;
 }
 
