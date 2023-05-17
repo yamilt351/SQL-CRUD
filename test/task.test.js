@@ -1,59 +1,85 @@
+
 const Request = require('supertest');
 const { expect } = require('chai');
-const session = require('supertest-session');
-const express = require('express');
-const app = express();
-const mySession = session(app);
 const myReq = Request('http://localhost:4000');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
+const jwtSecret = process.env.TOKEN;
 
-const test = {
-  user_id: '1',
-  name: '134',
-  description: 'firs task',
-  hide: false,
-  task_day: 2023 / 22 / 21,
-};
-
+function generateAccessToken(userId) {
+  return jwt.sign({ userId }, jwtSecret, { expiresIn: '1800s' });
+}
 
 describe('Create task', () => {
-  beforeEach(async () => {
-    await mySession
-      .post('/users/signin')
-      .send({ email: '12234l@hotmail', password: '134' });
+  let token;
+  let testUser;
+  const test = { name: 'created', description: '123123123213' };
+
+  beforeEach(() => {
+    testUser = {
+      id: 9,
+      email: '12234l@hotmail',
+      password: '134',
+      created_at: '2023-05-11T13:47:41.354Z',
+      updated_at: '2023-05-11T13:47:41.354Z',
+    };
+
+    token = generateAccessToken(testUser.id);
   });
-  it('should return status code 200 if the user is logged in POST (/tasks/)', async () => {
-    const response = await mySession.post('/tasks/').send(test);
+
+  it('should return status 201 if the task is created POST (/tasks)', async () => {
+    const response = await myReq
+      .post('/tasks')
+      .set('Cookie', `token=${token}`)
+      .send(test);
     expect(response.statusCode).to.be.equal(200);
   });
-  it('should return status code 401 if the user is not logged in POST (/tasks/)', async () => {
-    const response = await mySession.post('/tasks/').send(test);
+
+  it('should return status code 401 if the user is not logged POST (/tasks)', async () => {
+    const response = await myReq.post('/tasks').send(test);
     expect(response.statusCode).to.be.equal(401);
   });
 });
 
-// describe('Edit Task', () => {
-//   beforeEach(async () => {
-//     await mySession
-//       .post('/users/signin')
-//       .send({ email: '12234l@hotmail', password: '134' });
-//   });
-//   it('should return status 200 if the user is the correct user and send a proper body request PUT (/tasks/:id)', async () => {
-//     const response = await mySession.put('/tasks/:id').send(test);
-//     expect(response.statusCode).to.be.equal(200);
-//   });
-//   it('should return status code 401 if the user is not loged POST (/tasks/:id)', async () => {
-//     const response = await mySession.put('/tasks/:id').send(test);
-//     expect(response.statusCode).to.be.equal(401);
-//   });
-// });
+describe('Edit Task', () => {
+  let token;
+  let testUser;
+  const test = { name: 'edited', description: '123123123213' };
+  const taskId = 21;
 
-// describe('Delete tasks', () => {
-//   beforeEach(async () => {
-//     await mySession
-//       .post('/users/signin')
-//       .send({ email: '12234l@hotmail', password: '134' });
-//   });
-//   it('should return status 200 if the tasks was deleted succesfully DELETE (/tasks/:id)', async () => {
-//     const response = await myReq.delete('/tasks/:id');
-//   });
-// });
+  beforeEach(() => {
+    testUser = {
+      id: 9,
+      email: '12234l@hotmail',
+      password: '134',
+      created_at: '2023-05-11T13:47:41.354Z',
+      updated_at: '2023-05-11T13:47:41.354Z',
+    };
+
+    token = generateAccessToken(testUser.id);
+  });
+
+  it('should return status 200 if the user is the correct user and send a proper body request PUT (/tasks/:id)', async () => {
+    const response = await myReq
+      .put(`/tasks/${taskId}`)
+      .set('Cookie', `token=${token}`)
+      .send(test);
+    expect(response.statusCode).to.be.equal(200);
+  });
+
+  it('should return status code 401 if the user is not logged PUT (/tasks/:id)', async () => {
+    const response = await myReq.put(`/tasks/${taskId}`).send(test);
+    expect(response.statusCode).to.be.equal(401);
+  });
+
+  it('should return status code 403 if the user is not authorized to edit the task PUT (/tasks/:id)', async () => {
+    const unauthorizedToken = generateAccessToken(2);
+    const response = await myReq
+      .put(`/tasks/${taskId}`)
+      .set('Cookie', `token=${unauthorizedToken}`)
+      .send(test);
+    expect(response.statusCode).to.be.equal(403);
+  });
+});
+

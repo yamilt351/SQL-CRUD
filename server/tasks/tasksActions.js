@@ -11,10 +11,11 @@ const taskActions = {
   getTasksById,
 };
 
-async function createTasks(body) {
+async function createTasks(body, userId) {
+  console.log(userId);
   const addTask = await client.query(
-    'INSERT INTO task (name, description) VALUES ($1, $2) RETURNING *',
-    [body.name, body.description],
+    'INSERT INTO task (name, description, user_id) VALUES ($1, $2, $3) RETURNING *',
+    [body.name, body.description, userId],
   );
   return addTask.rows[0];
 }

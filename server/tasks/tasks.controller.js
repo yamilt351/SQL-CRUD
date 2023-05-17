@@ -13,11 +13,13 @@ router.put('/:id', authMiddleware, editTasks);
 router.delete('/:id', authMiddleware, deleteTasks);
 
 function createTasks(req, res, next) {
+  const userId = req.user.id;
+  console.log(req);
   if (!req.body.name || !req.body.description) {
     res.status(400).json({ message: 'Name or Description cannot be empty' });
   } else {
     taskActions
-      .createTasks(req.body)
+      .createTasks(req.body, userId)
       .then((task) => res.json(task))
       .catch((error) => next(error));
   }

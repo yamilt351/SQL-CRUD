@@ -1,6 +1,6 @@
 import { pool } from '../../server.js';
 import bcrypt from 'bcryptjs';
-import { JWT_TOKEN } from '../../index.js'; 
+import { JWT_TOKEN } from '../../index.js';
 import jwt from 'jsonwebtoken';
 
 const client = await pool.connect();
@@ -28,12 +28,15 @@ async function hasPassword(user) {
 }
 
 export async function generateToken(userId) {
-  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN, { expiresIn: '48h' });
+  const sendToken = jwt.sign({ id: userId }, JWT_TOKEN, {
+    expiresIn: '48h',
+  });
   return sendToken;
 }
 
 async function signIn(user) {
   const email = user.email;
+  console.log(user);
   const password = user.password;
   const alreadyExists = await findUserByEmail(email);
   if (!alreadyExists) {
@@ -42,7 +45,7 @@ async function signIn(user) {
     const dbUser = alreadyExists;
     const passwordMatch = await bcrypt.compare(password, dbUser.password);
     if (passwordMatch) {
-      const sendToken = await generateToken(user.id);
+      const sendToken = await generateToken(dbUser.id);
       return { dbUser, sendToken };
     } else {
       return false;
