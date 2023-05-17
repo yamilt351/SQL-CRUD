@@ -10,7 +10,6 @@ const taskActions = {
 };
 
 async function createTasks(body, userId) {
-  console.log(userId);
   const addTask = await client.query(
     'INSERT INTO task (name, description, user_id) VALUES ($1, $2, $3) RETURNING *',
     [body.name, body.description, userId],
@@ -38,7 +37,6 @@ async function deleteTasks(task) {
   const deleteTasksById = await client.query('DELETE FROM task WHERE id=$1', [
     task.id,
   ]);
-  console.log(deleteTasksById);
   return deleteTasksById.rowCount;
 }
 
@@ -46,7 +44,6 @@ async function compareId(postid, userid) {
   const findPost = await client.query('SELECT * FROM task WHERE id=$1', [
     postid,
   ]);
-  console.log(findPost);
   if (findPost.rows[0].user_id === userid) {
     return findPost.rows[0];
   } else {

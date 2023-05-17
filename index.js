@@ -3,7 +3,7 @@ import importMiddlewares from './midlewareHandler.js';
 import userRouter from './server/users/user.controller.js';
 import taskRouter from './server/tasks/tasks.controller.js';
 import { pool } from './server.js';
-import errorHandler from './server/helpers/errorHandler.js'
+import errorHandler from './server/helpers/errorHandler.js';
 
 const app = express();
 const middlewares = await importMiddlewares();

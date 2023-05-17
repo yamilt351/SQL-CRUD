@@ -22,9 +22,14 @@ async function findUserByEmail(email) {
 }
 
 async function hasPassword(user) {
-  const bcryptSalt = await bcrypt.genSalt(12);
-  const hashed = await bcrypt.hash(user.password, bcryptSalt);
-  return hashed;
+  const validPassword = validatePassword(user.password);
+  if (validPassword) {
+    const bcryptSalt = await bcrypt.genSalt(12);
+    const hashed = await bcrypt.hash(user.password, bcryptSalt);
+    return hashed;
+  } else {
+    throw new Error('bad request');
+  }
 }
 
 export async function generateToken(userId) {
@@ -36,7 +41,6 @@ export async function generateToken(userId) {
 
 async function signIn(user) {
   const email = user.email;
-  console.log(user);
   const password = user.password;
   const alreadyExists = await findUserByEmail(email);
   if (!alreadyExists) {
@@ -54,17 +58,33 @@ async function signIn(user) {
 }
 
 async function signUp(user) {
-  const alreadyExists = await findUserByEmail(user.email, client);
-  if (!alreadyExists) {
-    const encryptedPass = await hasPassword(user);
-    const result = await client.query(
-      'INSERT INTO users (email,password) VALUES ($1,$2) RETURNING *',
-      [user.email, encryptedPass],
-    );
-    return result.rows[0];
+  const validEmail = validateEmail(user.email);
+  if (validEmail) {
+    const alreadyExists = await findUserByEmail(user.email, client);
+    if (!alreadyExists) {
+      const encryptedPass = await hasPassword(user);
+      const result = await client.query(
+        'INSERT INTO users (email,password) VALUES ($1,$2) RETURNING *',
+        [user.email, encryptedPass],
+      );
+      return result.rows[0];
+    } else {
+      throw new Error('bad request');
+    }
   } else {
     throw new Error('bad request');
   }
+}
+
+function validatePassword(password) {
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  return passwordRegex.test(password);
+}
+
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 export default userActions;

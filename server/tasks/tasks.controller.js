@@ -11,7 +11,6 @@ router.delete('/:id', authMiddleware, deleteTasks);
 
 async function createTasks(req, res, next) {
   const userId = await req.user.id;
-  console.log(req);
   if (!req.body.name || !req.body.description) {
     res.status(400).json({ message: 'Name or Description cannot be empty' });
   } else {

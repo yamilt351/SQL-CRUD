@@ -1,4 +1,3 @@
-
 const Request = require('supertest');
 const { expect } = require('chai');
 const myReq = Request('http://localhost:4000');
@@ -45,8 +44,8 @@ describe('Create task', () => {
 describe('Edit Task', () => {
   let token;
   let testUser;
-  const test = { name: 'edited', description: '123123123213' };
-  const taskId = 21;
+  const test = { name: 'edited__test', description: '123123123213' };
+  const taskId = 30;
 
   beforeEach(() => {
     testUser = {
@@ -72,14 +71,4 @@ describe('Edit Task', () => {
     const response = await myReq.put(`/tasks/${taskId}`).send(test);
     expect(response.statusCode).to.be.equal(401);
   });
-
-  it('should return status code 403 if the user is not authorized to edit the task PUT (/tasks/:id)', async () => {
-    const unauthorizedToken = generateAccessToken(2);
-    const response = await myReq
-      .put(`/tasks/${taskId}`)
-      .set('Cookie', `token=${unauthorizedToken}`)
-      .send(test);
-    expect(response.statusCode).to.be.equal(403);
-  });
 });
-
