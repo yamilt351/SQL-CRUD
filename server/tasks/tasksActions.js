@@ -28,7 +28,7 @@ async function getTasks(userId) {
 
 async function editTasks(body, id) {
   const editedTasks = await client.query(
-    `UPDATE task SET name=$1, description=$2 WHERE id=$3`,
+    `UPDATE task SET name=\$1, description=\$2 WHERE id=\$3 RETURNING *`,
     [body.name, body.description, id],
   );
   return editedTasks.rows[0];

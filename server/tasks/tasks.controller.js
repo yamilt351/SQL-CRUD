@@ -9,8 +9,8 @@ router.get('/getAll', authMiddleware, getTasks);
 router.put('/:id', authMiddleware, editTasks);
 router.delete('/:id', authMiddleware, deleteTasks);
 
-function createTasks(req, res, next) {
-  const userId = req.user.id;
+async function createTasks(req, res, next) {
+  const userId = await req.user.id;
   console.log(req);
   if (!req.body.name || !req.body.description) {
     res.status(400).json({ message: 'Name or Description cannot be empty' });
@@ -29,9 +29,9 @@ function getTasks(req, res, next) {
     .catch((error) => next(error));
 }
 
-function editTasks(req, res, next) {
+async function editTasks(req, res, next) {
   const id = req.params.id;
-  const checkProperty = taskActions.compareId(id, req.user.id);
+  const checkProperty = await taskActions.compareId(id, req.user.id);
   if (!req.body.name || !req.body.description) {
     res.status(400).send();
   } else if (!checkProperty) {
